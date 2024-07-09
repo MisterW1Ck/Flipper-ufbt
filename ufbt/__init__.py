@@ -96,15 +96,14 @@ def ufbt_cli():
     UFBT_APP_DIR = os.getcwd()
 
     if platform.system() == "Windows":
-        commandline = (
-            r'call "%UFBT_STATE_DIR%/current/scripts/toolchain/fbtenv.cmd" env & '
-        )
+        commandline = r'call "%UFBT_STATE_DIR%/current/scripts/toolchain/fbtenv.cmd" env & python '
     else:
-        commandline = '. "$UFBT_STATE_DIR/current/scripts/toolchain/fbtenv.sh" && '
+        commandline = (
+            '. "$UFBT_STATE_DIR/current/scripts/toolchain/fbtenv.sh" && python3 '
+        )
 
     commandline += oslex.join(
         [
-            "python3",
             "-m",
             "SCons",
             "-Q",
