@@ -9,6 +9,7 @@ authors = [{ name = "Flipper Devices Inc.", email = "pypi@flipperdevices.com" }]
 description = "uFBT - micro Flipper Build Tool. Tool for building and developing applications (.fap) for Flipper Zero and its device family."
 readme = "README.md"
 requires-python = ">=3.8"
+dependencies = ["oslex>=0.1.3"]
 keywords = ["ufbt", "flipperzero", "fbt", "stm32", "fap"]
 license = { text = "GPL-3.0" }
 classifiers = [
@@ -25,7 +26,6 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
 ]
-
 
 [project.urls]
 homepage = "https://github.com/flipperdevices/flipperzero-ufbt"
