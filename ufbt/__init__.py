@@ -21,6 +21,7 @@ import os
 import pathlib
 import platform
 import sys
+import oslex
 
 from .bootstrap import (
     DEFAULT_UFBT_HOME,
@@ -83,29 +84,36 @@ def ufbt_cli():
     if not os.path.exists(ufbt_state_dir / "current"):
         bootstrap_cli(["update"])
 
-    if not (ufbt_state_dir / "current" / "scripts" / "ufbt").exists():
+    if not (
+        ufbt_script_root := ufbt_state_dir / "current" / "scripts" / "ufbt"
+    ).exists():
         print("SDK is missing scripts distribution!")
         print("You might be trying to use an SDK in an outdated format.")
-        print("Run `ufbt update -h` for more information on how to update.")
+        print("You can clean up current state with `ufbt clean --purge`.")
+        print("Run `ufbt update -h` for more information on SDK installation.")
         return 1
 
     UFBT_APP_DIR = os.getcwd()
 
     if platform.system() == "Windows":
-        commandline = (
-            r'call "%UFBT_STATE_DIR%/current/scripts/toolchain/fbtenv.cmd" env & '
-            "python -m SCons -Q --warn=target-not-built "
-            r'-C "%UFBT_STATE_DIR%/current/scripts/ufbt" '
-            f'"UFBT_APP_DIR={UFBT_APP_DIR}" ' + " ".join(sys.argv[1:])
-        )
-
+        commandline = r'call "%UFBT_STATE_DIR%/current/scripts/toolchain/fbtenv.cmd" env & python '
     else:
         commandline = (
-            '. "$UFBT_STATE_DIR/current/scripts/toolchain/fbtenv.sh" && '
-            "python3 -m SCons -Q --warn=target-not-built "
-            '-C "$UFBT_STATE_DIR/current/scripts/ufbt" '
-            f'"UFBT_APP_DIR={UFBT_APP_DIR}" ' + " ".join(sys.argv[1:])
+            '. "$UFBT_STATE_DIR/current/scripts/toolchain/fbtenv.sh" && python3 '
         )
+
+    commandline += oslex.join(
+        [
+            "-m",
+            "SCons",
+            "-Q",
+            "--warn=target-not-built",
+            "-C",
+            str(ufbt_script_root),
+            f"UFBT_APP_DIR={UFBT_APP_DIR}",
+            *sys.argv[1:],
+        ]
+    )
 
     # print(commandline)
     retcode = os.system(commandline)
